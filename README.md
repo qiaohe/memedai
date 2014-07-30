@@ -1,6 +1,6 @@
 memedai
 =======
-# 么么贷学生分期REST API 接口文档
+# 么么贷学生分期 REST API 接口文档
 
 ## 修改记录
 * 2013-7-30
@@ -9,7 +9,7 @@ memedai
 
 * 2013-6-6
 > 修改接口`PUT`与`DELETE`调用方式为`POST`以方便传统方式调用。
-> 增加展会修改结果说明
+> 增加学生分期修改结果说明
 
 ### todo
 对接第三方支付
@@ -37,13 +37,13 @@ memedai
 |get|
 
 ### 参数
-Android pad应用
+Android Pad应用
 
 |必选|名称|类型|说明|
 |-|-|-|-|
 | * |type|string|必须为android_Pad|
-| * |osVer|string|Android版本|
-| * |ver|string|应用版本|
+| * |osVersion|string|Android版本|
+| * |appVersion|string|应用版本|
 | * |token|string|网卡地址|
 
 
@@ -58,34 +58,27 @@ json格式配置信息
     }
 
 [返回目录](#index)
-## [创建、修改展会](id:create_exhibition)
-展会的创建与修改使用同一接口，调用时如果`exKey`对应的展会不存在则创建新展会，否则更新已有展会内容
+## [推广员登陆](id:recommender_Login)
+推广员（沐风线下团队）登陆，使用后台创建的用户进行登陆
 
-### `${app_server}/rest/exhibitions/put`
+### `${app_server}/rest/recommender/login`
 |Method|Content-Type|
 |-|-|
-|post|multipart/form-data|
+|get|text/plain|
 
 ### 参数
 可选参数未设置时不进行更新
 
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |pwd|string|服务器校验密码，防止恶意用户变更数据|
-| * |exKey|string|展会标识，**只能包含字母与数字**|
-|   |icon|file|展会图标，**png格式**|
-|   |name|string|展会名称|
-|   |dateFrom|string|展会开始日期，格式为`yyyy-M-d`，例：2013-1-23|
-|   |dateTo|string|展会结束日期，格式为`yyyy-M-d`，例：2013-1-23|
-|   |address|string|展会地址|
-|   |organizer|string|主办单位|
-|   |brief|file|展会简介文件，**html格式**|
-|   |schedule|file|展会日程文件，**html格式**|
+| * |userName|string|推广员用户名|
+| * |password|string|推广员登陆密码|
+
 
 ### 返回值
 |Http Status Code|原因|
 |-|-|
-|200 - OK|已更新展会|
+|200 - OK|登陆成功|
 |400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
 |500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
 
@@ -93,28 +86,28 @@ ResponseBody
 
     {
         errors:[
-            "", //错误信息
-            ...
+            "key", //1001
+            "error"
         ]
     }
 
 [返回目录](#index)
-## [删除展会](id:delete_exhibition)
-### `${app_server}/rest/exhibitions/delete`
+## [更改密码](id:recommender_ChangePassword)
+### `${app_server}/rest/recommender/{recommender}/changePwd`
 |Method|Content-Type|
 |-|-|
-|post|application/x-www-form-urlencoded|
+|post|application/json|
 
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |pwd|string|服务器校验密码，防止恶意用户变更数据|
-| * |exKey|string|展会标识|
+| * |recommander|string|推广员名称|
+| * |newPwd|string|修改后新密码|
 
 ### 返回值
 |Http Status Code|原因|
 |-|-|
-|200 - OK|已删除展会|
+|200 - OK|修改成功|
 |400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
 |500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
 
@@ -128,8 +121,47 @@ ResponseBody
     }
 
 [返回目录](#index)
-## [展会列表](id:find_exhibitions)
-### `${app_server}/rest/exhibitions/find`
+## [分期申请](id:installment_application)
+### `${app_server}/rest/installmentProduct/`
+|Method|
+|-|
+|post|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |token|string|接入方唯一标识，用于区分不同的organization和不同的应用接入么么贷平台|
+| * |oid|String|是接入系统方提供的申请分期的会员唯一标识，比如会员唯一编码，|
+| * |name|String|申请分期人的姓名|
+| * |email|String|申请分期人的email地址|
+| * |mobile|string|申请分期人的手机号码|
+| * |product_Id|string|申请分期产品货号|
+| *  |produtName|string|购买的分期产品的商品名称|
+| *  |model|string|购买分期产品的型号|
+| *  |price|string|产品价格|
+| *  |quantity|string|购买产品的数量|
+| *  |total|string|产品的总价|
+
+### 返回值
+json格式分期申请
+
+    {
+        "link":"${app_server}/rest/installmentProduct/1"
+        "token":"xxx", //沐风标识
+        "oid":-1, //沐分提供的会员的external ID
+        "name":"Johnson"
+        "mobile":"13671719882"
+        "email":"tusc_heqiao@163.com"
+        "product_Id":"SKU00000102"
+        "productName"："3C产品"
+        "model":"型号30101"
+        "price":"1800.00"
+        "quantity":"30"
+        "total":"54000"
+    }
+    
+## [分期列表](id:installment_application_List)
+### `${app_server}/rest/installmentProduct/`
 |Method|
 |-|
 |get|
@@ -137,93 +169,346 @@ ResponseBody
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |token|string|手机唯一标识码，用于过滤已报名展会|
-| * |size|int|返回记录条数，`size = -1`时返回不分页的所有数据|
-| * |last|long|展会创建时间戳，用于不间断滚动，返回记录的创建时间早于此时间。<br>**第一页数据设置为`last = -1`**，第二页设置为第一页最后一条记录的`createAt`字段值|
-|   |name|string|展会名关键字，搜索时按此字段值匹配，不设置时不进行过滤|
-|   |dateFrom|string|展会开始日期，格式2012-3-4|
-|   |dateTo|string|展会结束日期，格式2012-3-4|
-|   |exKey|string|按exKey搜索，如果此字段被设置，则忽略name, dateFrom, dateTo|
+| * |token|string|接入方唯一标识，用于区分不同的organization和不同的应用接入么么贷平台|
 
 ### 返回值
-json格式展会列表
+json格式分期申请
 
     {
-        "name":"xxx", //手机发送请求时的name字段值
-        "last":-1, //手机发送请求时的last字段值
-        "list":[
-            {
-                "exKey":"ccbn", //展会标识
-                "name":"xxx展会", //展会名称
-                "date":"时间：2013年11月13日---2013年11月15日", //展会日期
-                "address":"地址：上海国际展览中心", //展会地址
-                "organizer":"主办单位：XXX", //主办单位
-                "createdAt":1370338650895, //展会创建时间戳
-                "applied":"Y", //是否已报名，Y 已报名，N 未报名
-                "count":0, //未读消息数
-                "status": "A", //审核状态，A 审核通过，P 处理中，D 未通过
-            },
+        "token":"xxx", //沐风标识
+        "oid":100301, //沐风提供的会员的external ID
+        "name":"Johnson"
+        "mobile":"13671719882"
+        "email":"tusc_heqiao@163.com"
+        "product_Id":"SKU00000102"
+        "productName"："3C产品"
+        "model":"型号30101"
+        "price":"1800.00"
+        "quantity":"30"
+        "total":"54000"
+        status:"0" //状态	0登记  1确认 2取消
+        createTime:'2013-09-01 09:00:00' //Datetime格式 yyyy-mm-dd hh:MM:ss
+    }  
+    
+     ## [分期搜索](id:installment_application_search)
+### `${app_server}/rest/installmentProduct/search
+|Method|
+|-|
+|get|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |token|string|接入方唯一标识，用于区分不同的organization和不同的应用接入么么贷平台|
+| * |query|string|接入方唯一标识，用于区分不同的organization和不同的应用接入么么贷平台|
+
+
+### 返回值
+json格式分期申请
+
+    {
+        "token":"xxx", //沐风标识
+        "oid":-1, //沐风提供的会员的external ID
+        "name":"Johnson"
+        "mobile":"13671719882"
+        "email":"tusc_heqiao@163.com"
+        "product_Id":"SKU00000102"
+        "productName"："3C产品"
+        "model":"型号30101"
+        "price":"1800.00"
+        "quantity":"30"
+        "total":"54000"
+        status:"0" //状态	0登记  1确认 2取消
+        createTime:'2013-09-01 09:00:00' //Datetime格式 yyyy-mm-dd hh:MM:ss
+    }  
+     
+ ## [分期列表（分页）](id:installment_application_List)
+### `${app_server}/rest/installmentProduct/`
+|Method|
+|-|
+|get|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |token|string|接入方唯一标识，用于区分不同的organization和不同的应用接入么么贷平台|
+| * |query|string|查找字符数 kv eg name=johnson query = all 查询所有结果|
+| * |page|string|页码 第几页|
+| * |size|string|条数 取多少条|
+| * |sort|string|排序字段名称，排序方式 sortField：desc,sortField1:asc|
+
+### 返回值
+json格式分期申请(分页)
+
+    {
+       "pageCount":"10" //总页数，查询结果集的总页数
+       size:"20"        //每页显示条数 目前我们我们的定制设备确定
+       [ "token":"xxx", //沐风标识
+        "oid":-1, //沐风提供的会员的External ID
+        "name":"Johnson"
+        "mobile":"13671719882"
+        "email":"tusc_heqiao@163.com"
+        "product_Id":"SKU00000102"
+        "productName"："3C产品"
+        "model":"型号30101"
+        "price":"1800.00"
+        "quantity":"30"
+        "total":"54000"
+        status:"0" //状态	0登记  1确认 2取消
+        createTime:'2013-09-01 09:00:00' //Datetime格式 yyyy-mm-dd hh:MM:ss]
+        ..
+        
+    }  
+       
+## [会员（学生）信息查询](id:memerInfo)
+### `${app_server}/rest/member/`
+|Method|
+|-|
+|get|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |memberId|string|会员ID （学生的ID号）|
+
+### 返回值
+json格式会员基本信息
+
+    {
+           "memberid":"10" 
+            "name":"Johnson" //学生姓名
+            "university":"云南大学" //学校
+            "universitIdy":"X123456" //学校编号
+            "room_address":"XXXX Road No.1234"
+            "home_Adress":"XXXX Road No.223"
+            "degree":"master"
+            "department":"社科学院"
+            "major":"社科系"
+            "class": ""
+            student_Id:""
+            lengthSchool：""
+            enrollTime:""
+            register:""
+            registerTime:""
+            imageUrl1:""
+            imageUrl2:"http://"
+            keyiner:"Johnson"
+            createTime:"2012-09-01 09:00:00"
+   }
+            
+ ## [会员（学生）信息查询](id:memerInfo)
+### `${app_server}/rest/member/`
+|Method|
+|-|
+|get|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |memberId|string|会员ID （学生的ID号）|
+
+### 返回值
+json格式会员基本信息
+
+    {
+           "memberid":"10" 
+            "name":"Johnson" //学生姓名
+            "university":"云南大学" //学校
+            "universitIdy":"X123456" //学校编号
+            "room_address":"XXXX Road No.1234"
+            "home_Adress":"XXXX Road No.223"
+            "degree":"master"
+            "department":"社科学院"
+            "major":"社科系"
+            "class": ""
+            student_Id:""
+            lengthSchool：""
+            enrollTime:""
+            register:""
+            registerTime:""
+            imageUrl1:""
+            imageUrl2:"http://"
+            "dcardFront"："http://"
+            "idCardBack":""
+            "studentCardPage1":""
+            "studentCardPage2":""
+            keyiner:"Johnson"
+            createTime:"2012-09-01 09:00:00"
+   }
+            
+## [修改会员（学生）基本信息](id:memerInfo)
+### `${app_server}/rest/member/`
+|Method|
+|-|
+|post|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |name|string|学生姓名|
+| * |idCardNo|string|学生身份工作号码 522526197405183017|
+| * |authorityDate|string|身份证有限期起止时间 2012.08-2032.08|
+| * |phone|string|手机号码|
+| * |email|string|email地址|
+| * |university|string|学校名称|
+| * |universityCode|string|学校编码|
+| * |room_address|string|宿舍地址|
+| * |home_address|string|家庭住址|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+| * |memberId|string|会员ID （学生的ID号）|
+
+
+|Http Status Code|错误原因|
+|-|-|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "2001", //会员目前尚不存在
             ...
         ]
     }
 
-### 常量定义
-以下常量由手机端自行拼接使用  
-`${exKey}`展会标识
 
-* `${asset_server}/${exKey}/icon.png`  
-展会列表图标
+## [上传学生身份证正面](id:upload_idCardFront)
+### `${app_server}/rest/member/{id}/idCardFront`
+|Method|Content-Type|
+|-|-|
+|post|multipart/form-data|
 
-* `${asset_server}/${exKey}/brief.html`  
-展会简介页面
-
-* `${asset_server}/${exKey}/schedule.html`  
-展会日程页面
-
-* `${asset_server}/${exKey}/qrcode.png`  
-展会二维码图片路径
-
-[返回目录](#index)
-
-## [推荐展会](id:pop_exhibitions)
-### `${app_server}/rest/exhibitions/pop`
-|Method|
-|-|
-|get|
 
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |token|string|手机唯一标识码，用于标识已报名展会|
-| * |size|int|返回记录条数，`size = -1`时返回不分页的所有数据|
-| * |last|int|排序字段，用于不间断滚动，用法类似展会列表中last参数。取值为返回结果中的 orderNo 字段|
+| * |idCardFront|file|idCard 正面文件 |
 
-### 返回值
-json格式展会列表
+### 成功返回值（HTTP statusCode = 200）
+json身份证基本信息
+    {
+           "memberid":"10" 
+           "idCardNo":"XXXXXXX"
+           "name":"johnson"
+           "sex":"Male" //optional Male or Femal
+           "birthday":"2008-12-01"
+           
+   }
+
+
+### 错误返回值
+|Http Status Code|原因|
+|-|-|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
 
     {
-        "last":-1, //手机发送请求时的last字段值
-        "list":[
-            {
-                "id":3, //推荐 id
-                "exKey":"ccbn", //展会标识
-                "name":"xxx展会", //展会名称
-                "date":"时间：2013年11月13日---2013年11月15日", //展会日期
-                "address":"地址：上海国际展览中心", //展会地址
-                "organizer":"主办单位：XXX", //主办单位
-                "orderNo":123, //推荐列表排序字段，asc
-                "applied":"Y", //是否已报名，Y 已报名，N 未报名
-                "count":0, //未读消息数
-                "status": "A", //审核状态，A 审核通过，P 处理中，D 未通过
-            },
+        errors:[
+            "2001", //修改信息失败，会员不存在
+            ...
+        ]
+    }
+    
+## [上传学生身份证第一页](id:upload_idCard_back)
+### `${app_server}/rest/member/{id}/idCardBack`
+|Method|Content-Type|
+|-|-|
+|post|multipart/form-data|
+
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |idCardBack|file|idCard 反面文件 |
+
+
+
+### 返回值
+|Http Status Code|原因|
+|-|-|
+|200 - OK|修改成功|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "2001", //修改信息失败，会员不存在
             ...
         ]
     }
 
-[返回目录](#index)
+## [上传学生学证第一页](id:upload_studentCard_page1)
+### `${app_server}/rest/member/{id}/studentCardPage1`
+|Method|Content-Type|
+|-|-|
+|post|multipart/form-data|
 
-## [已报名展会列表](id:find_applied_exhibitions)
-### `${app_server}/rest/exhibitions/find_applied`
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |studentCardPage1|file|student Card 第一页 |
+
+### 返回值
+|Http Status Code|原因|
+|-|-|
+|200 - OK|上传成功|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "2001", //学生证信息以及存在
+            ...
+        ]
+    }
+
+## [上传学生学证第二页](id:upload_studentCard_page2)
+### `${app_server}/rest/member/{id}/studentCardPage2`
+|Method|Content-Type|
+|-|-|
+|post|multipart/form-data|
+
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |studentCardPage1|file|student Card 第二页 |
+
+### 返回值
+|Http Status Code|原因|
+|-|-|
+|200 - OK|上传成功|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "2001", //学生证信息以及存在
+            ...
+        ]
+    }
+
+ ## [会员（学生）联系人信息查询](id:contactInfo)
+### `${app_server}/rest/member/{memberId}/contact`
 |Method|
 |-|
 |get|
@@ -231,187 +516,199 @@ json格式展会列表
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |token|string|手机唯一标识码|
+| * |memberId|string|会员ID （学生的ID号）|
 
 ### 返回值
-json格式已报名展会列表
+json格式学生联系人基本信息列表（Json Array）
 
+    {
+        [
+           "memberid":"10" 
+            "contactId":"1010" //联系人Id
+            "name_1":"小张" //姓名
+            "relation1":"X123456" //关系1父母 2兄弟姐妹 3其他亲属 4同学 5同事 6朋友 7其他
+            "fixedPhone1":"010-000000"
+            "mobilePhone1":"13671719882"
+             "name_1":"云南大学"
+            "relation1":"X123456" 
+            "fixedPhone1":"ba ba ba"
+            "mobilePhone1":"ba ba ba"
+            "register":"Johnson"
+            "registerTime":"2014-09-25"
+            "createTime":"2014-09-25 09:00:00"],
+            ...
+   }
+  
+  ## [会员（学生）联系人添加](id:addContactInfo)
+### `${app_server}/rest/member/{id}/contact`
+|Method|
+|-|
+|put|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |name1|string|联系人一姓名|
+| * |relation1|string|联系人一关系	1父母 2兄弟姐妹 3其他亲属 4同学 5同事 6朋友 7其他|
+| * |fixPhone1|string|联系人一固定电话|
+| * |mobilePhone1|string|联系人一手机|
+| * |name1|string|联系人二姓名|
+| * |relation1|string|联系人二关系	1父母 2兄弟姐妹 3其他亲属 4同学 5同事 6朋友 7其他|
+| * |fixPhone1|string|联系人二固定电话|
+| * |mobilePhone1|string|联系人二手机|
+
+### 返回值
+|Http Status Code|原因|
+|-|-|
+|200 - OK|添加学生联系人成功|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "key", //1001
+            "error"
+        ]
+    }
+
+## [分期列表](id:member_products)
+### `${app_server}/rest/member/{memberId}/product`
+|Method|
+|-|
+|get|
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |memberId|string|么么贷会员ID|
+
+### 返回值
+json格式会员（学生）购买分期产品列表
+
+    {
     [
-        {
-            "exKey":"ccbn", //展会标识
-            "name":"xxx展会", //展会名称
-            "date":"时间：2013年11月13日---2013年11月15日", //展会日期
-            "address":"地址：上海国际展览中心", //展会地址
-            "organizer":"主办单位：XXX", //主办单位
-            "status":"P", //审核状态，P 审核中(Processing)，A 审核通过(Approved)，D 审核未通过(Denied),
-            "count":0, //未读消息数
-        },
+        "product":"12345", 
+        "brand":-1, 
+        "productName":"Johnson"
+        "model":"13671719882"
+        "price":"tusc_heqiao@163.com"
+        "quantity":"SKU00000102"
+        "total"："3C产品"
+        ]
         ...
-    ]
-
-## [创建、修改展会新闻](id:create_news)
-新闻的创建与修改使用同一接口，调用时如果`newsKey`对应的新闻不存在则创建新闻，否则更新已有新闻内容
-
-### `${app_server}/rest/news/put`
+    }  
+## [提交分期申请](id:submit_Application)
+### `${app_server}/rest/member/{memberid}/application`
 |Method|Content-Type|
 |-|-|
-|post|multipart/form-data|
+|post|application/json|
 
 ### 参数
-可选参数未设置时不进行更新
-
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |pwd|string|服务器校验密码，防止恶意用户变更数据|
-| * |exKey|string|展会标识，**只能包含字母与数字**，必须先创建展会|
-| * |newsKey|string|新闻标识，**只能包含字母与数字**|
-|   |icon|file|新闻图标，**png格式**|
-|   |title|string|新闻标题|
-|   |content|file|新闻内容文件，**html格式**|
+| * |amount|string|分期金额|
+| * |term|string|期数|
+| * |apr|string|分期费率|
+| * |referenceId|string|沐风App提交分期申请关联ID|
 
-[返回目录](#index)
-## [删除新闻](id:delete_news)
-### `${app_server}/rest/news/delete`
-|Method|Content-Type|
+### 成功返回值（HTTP statusCode = 200）
+json身份证基本信息
+    {
+           "applicationNo":"XXXXXXX" //申请书编号
+           "applyDate":"johnson"     //申请时间
+   }
+
+### 错误返回值
+|Http Status Code|原因|
 |-|-|
-|post|application/x-www-form-urlencoded|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
 
-### 参数
-|必选|名称|类型|说明|
-|-|-|-|-|
-| * |pwd|string|服务器校验密码，防止恶意用户变更数据|
-| * |exKey|string|展会标识|
-| * |newsKey|string|新闻标识|
-
-[返回目录](#index)
-## [新闻列表](id:find_news)
-### `${app_server}/rest/news/find`
-|Method|
-|-|
-|get|
-
-### 参数
-|必选|名称|类型|说明|
-|-|-|-|-|
-| * |exKey|string|展会标识|
-
-### 返回值
-json格式
+ResponseBody
 
     {
-        "exKey":"ccbn", //展会标识
-        "list":[
-            {
-                "newsKey":"n1s", //新闻标识
-                "title":"xxxx", //新闻标题
-                "createdAt":1370338650895, //新闻发布时间
-            },
+        errors:[
+            "", //申请已经被取消
             ...
         ]
     }
 
-### 常量定义
-以下参数由手机应用定义并自行调用  
-`${exKey}`展会标识  
-`${newsKey}`新闻标识  
-
-* `${asset_server}/${exKey}/news/${newsKey}.png`  
-新闻列表图标
-
-* `${asset_server}/${exKey}/news/${newsKey}.html`  
-新闻内容
-
-[返回目录](#index)
-## [展会报名](id:apply)
-### `${app_server}/rest/applies/put`
+## [取消分期申请](id:cancel_Application)
+### `${app_server}/rest/member/{memberid}/application`
 |Method|Content-Type|
 |-|-|
-|post|application/x-www-form-urlencoded|
+|delete|application/json|
 
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |exKey|string|展会标识|
-| * |token|string|手机标识|
-| * |name|string|姓名|
-| * |mobile|string|手机|
-| * |email|string|邮箱|
-| * |type|string|参展者类型，A 参观展会(Attendee)，E 展示产品(Exhibitor)|
+| * |referenceId|string|沐风App提交分期申请关联ID|
 
-[返回目录](#index)
-## [展会报名送审](id:apply_process)
-*todo* __由369会网后台提供__
-
-[返回目录](#index)
-## [展会审批结果](id:apply_update)
-### `${app_server}/rest/applies/update`
-|Method|Content-Type|
-|-|-|
-|post|application/x-www-form-urlencoded|
-
-### 参数
-|必选|名称|类型|说明|
-|-|-|-|-|
-| * |pwd|string|服务器校验密码，防止恶意用户变更数据|
-| * |exKey|string|展会标识|
-| * |token|string|手机标识|
-| * |status|string|审核结果<br>A 审核通过(Approved)，D 审核未通过(Denied)|
-|   |reason|string|审核变更原因，手机端显示|
-
-[返回目录](#index)
-## [审核状态显示](id:apply_status)
-手机端显示审核状态页面时，需要先调用接口获得当前展会审核状态
-### `${app_server}/rest/applies/get`
-|Method|
-|-|
-|get|
-
-### 参数
-|必选|名称|类型|说明|
-|-|-|-|-|
-| * |exKey|string|展会标识|
-| * |token|string|手机标识|
 
 ### 返回值
-json格式，手机端通过`status`字段判断显示页面，审核记录存放于`logs`字段
+|Http Status Code|原因|
+|-|-|
+|200 - OK|取消分期申请成功|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
 
     {
-        "exKey":"ccbn", //展会标识
-        "status":"N", //审核状态，N 未报名(Not Applied)，P 审核中，A 审核通过，D 未通过
-        "logs":[ //审核历史纪录
-            "您于xxxx年xx月xx日提交资料",
-            "我们对您的资料审核完毕",
+        errors:[
+            "", //申请已经被取消
             ...
         ]
     }
 
-[返回目录](#index)
-## [二维码显示](id:qrcode)
-二维码存放于资源服务器，手机端通过拼接图片文件地址访问，如果图片不存在（返回404），则提示用户报名，否则显示图片
-### `${asset_server}/${exKey}/qrcode/${token}.png`
-
-[返回目录](#index)
-## [展会消息发送](id:msg_send)
-iOS消息发送由苹果服务器提供  
-Android消息发送由自建消息服务器发送  
-消息发送后，服务器更新消息已发送状态，消息列表由服务器提供  
-### `${app_server}/rest/messages/send`
+## [查看借款协议](id:agreement)
+### `${app_server}/rest/member/{memberid}/agreement`
 |Method|Content-Type|
 |-|-|
-|post|application/x-www-form-urlencoded|
+|get|txt/html|
 
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |pwd|string|服务器校验密码，防止恶意用户变更数据|
-| * |exKey|string|展会标识|
-| * |msgKey|string|消息标识|
-| * |content|string|消息内容|
-|   |token|string|手机标识，不设置时发送给该展会下所有报名人员|
+| * |referenceId|string|沐风App提交分期申请关联ID|
 
-[返回目录](#index)
-## [手机消息列表](id:msg_find)
-### `${app_server}/rest/messages/find`
+
+### 返回值
+Agreement HTML page generated By template
+
+## [确认收货](id:receive_Product)
+### `${app_server}/rest/member/{id}/receivedProduct`
+|Method|Content-Type|
+|-|-|
+|post|application/x-www-form-urlencoded|
+
+
+### 参数
+|必选|名称|类型|说明|
+|-|-|-|-|
+| * |confirmPhoto|file| 本人与货品照片文件|
+| * |referenceId|string|沐风App提交分期申请关联ID|
+
+### 返回值
+|Http Status Code|原因|
+|-|-|
+|200 - OK|确认收货成功|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "2001", //申请以及被取消
+            ...
+        ]
+    }
+    
+ ## [分期还款计划](id:repay_Plan_List)
+### `${app_server}/rest/application/{applicationNo}/repayplan`
 |Method|
 |-|
 |get|
@@ -419,45 +716,71 @@ Android消息发送由自建消息服务器发送
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |exKey|string|展会标识|
-| * |token|string|手机标识|
+| * |applicationNo|string|由么么贷平台生成的申请书编号|
+
 
 ### 返回值
-json格式列表
+json格式分期还款计划列表
 
     {
-        "exKey":"ccbn", //展会标识
-        "list":[
-            {
-                "msgKey":"xx", //消息标识
-                "content":"请接收二维码", //消息内容
-                "createdAt":1370338650895, //消息创建时间
-                "read":"Y", //已读状态，N 未读，Y 已读
-            }
+     [
+        "dueDate"："2012-09-01"
+        "princiapal"："200.03"
+        "interest"："30.13"
+        "total"："230.16"
+     ]
+        ..
+    } 
+    
+### 错误返回值
+|Http Status Code|原因|
+|-|-|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "5001", //当前不需要还款
+            ...
         ]
     }
-
-[返回目录](#index)
-## [已读消息回执](id:msg_read)
-手机端在用户读取消息后，向服务器发送已读状态，需要注意离线阅读后在连线时更新
-### `${app_server}/rest/messages/read`
+    
+## [申请环节--补件](id:application_rfe)
+### `${app_server}/rest/member/{id}/application/{applicationNo}/rfe`
 |Method|Content-Type|
 |-|-|
 |post|application/x-www-form-urlencoded|
 
+
 ### 参数
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |exKey|string|展会标识|
-| * |token|string|手机标识|
-| * |msgKey|string|消息标识|
+| * |requirement|String|补件要求|
+| * |inforamtion|string|补件信息|
+| * |file|multipart/form-data|补件照片1|
+| * |file|multipart/form-data|补件照片2|
+| * |file|multipart/form-data|补件照片3|
 
-[返回目录](#index)
-## [消息已读状态更新](id:msg_update_read)
-*todo* __由369会网提供调用接口__
 
-[返回目录](#index)
-## [消息发送状态更新](id:msg_update_status)
-*todo* __由369会网提供__
+
+### 返回值
+|Http Status Code|原因|
+|-|-|
+|200 - OK|补件收货成功|
+|400 - Bad Request|参数错误，详细信息由`ResponseBody`描述|
+|500 - Internal Server Error|服务器内部错误，详细信息由`ResponseBody`描述|
+
+ResponseBody
+
+    {
+        errors:[
+            "6001", //当前提供的补件信息错误。
+            ...
+        ]
+    }
+        
+    
 
 [返回目录](#index)
