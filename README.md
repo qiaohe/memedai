@@ -4,7 +4,7 @@ memedai
 
 ## 修改记录
 * 2013-7-30
-> * 增加[推荐展会](#pop_exhibitions)
+> * 增加[学生分期注册](#pop_exhibitions)
 
 
 * 2013-6-6
@@ -41,7 +41,7 @@ Android pad应用
 
 |必选|名称|类型|说明|
 |-|-|-|-|
-| * |type|string|必须为android_phone|
+| * |type|string|必须为android_Pad|
 | * |osVer|string|Android版本|
 | * |ver|string|应用版本|
 | * |token|string|网卡地址|
@@ -52,7 +52,7 @@ json格式配置信息
 
     {
         "assetServer":"http://127.0.0.1:8080/memedai_asset", //资源服务器地址
-        "token":"12341234", //Android应用由服务端生成token，iOS为空
+        "token":"12341234", //Android应用由服务端生成token.
         "upgrade":"http://server:ip/xxx.apk", //Android pad应用自动更新，为空时表示不需要更新
         "upgradeNote":"新版本发布", //Android应用更新说明
     }
